@@ -9,6 +9,6 @@ spring:
 
 logging:
   level:
-    org.apache.kafka: DEBUG
+    org.apache.kafka: ERROR
     org.springframework.kafka: DEBUG
-    com.example: DEBUG
+    com.ecommerce.stockservice: ERROR
