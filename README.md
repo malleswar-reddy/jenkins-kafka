@@ -31,6 +31,12 @@ docker network ls     # all networks
 docker volume ls      # all volumes
 ```
 
+## find files in docker container
+
+```bash
+docker exec -it jenkins-kafka-kafka-1 ls -l /usr/bin/
+```
+
 | Problem                           | Solution                                                          |
 |-----------------------------------|-------------------------------------------------------------------|
 | Missing docker-credential-desktop | Reinstall Docker Desktop                                          |
