@@ -1,4 +1,3 @@
-```dockerfile
 FROM openjdk:17-jdk-slim
 
 ENV KAFKA_VERSION=3.3.1
@@ -30,4 +29,4 @@ RUN chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["kafka-server-start.sh", "/opt/kafka/config/server.properties"]
-```
+# Expose Kafka ports

@@ -31,6 +31,13 @@ docker network ls     # all networks
 docker volume ls      # all volumes
 ```
 
+## Purging All Unused or Dangling Images, Containers, Volumes, and Networks
+
+```bash
+docker system prune -a --volumes
+docker system prune -a
+```
+
 ## find files in docker container
 
 ```bash
