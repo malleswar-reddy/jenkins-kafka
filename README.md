@@ -56,6 +56,13 @@ docker exec -it jenkins-kafka-kafka-1 ls -l /usr/bin/
 docker build -t custom-kafka:3.3.1 .
 ```
 
+```shell
+
+docker exec -it jenkins-kafka-kafka-1 kafka-console-consumer --bootstrap-server kafka:9092 --topic order_topics --from-beginning
+
+
+```
+
 ## Build Custom Zookeeper Image
 
 ```bash
@@ -65,3 +72,4 @@ cat <<EOF > Dockerfile
 docker build -t custom-zookeeper:3.8.0 .
 
 ```
+
