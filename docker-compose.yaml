@@ -1,18 +1,15 @@
 version: '3.8'
 services:
   zookeeper:
-    image: custom-zookeeper:3.8.0
+    image: confluentinc/cp-zookeeper:7.3.0
     container_name: jenkins-kafka-zookeeper-1
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     ports:
       - "2181:2181"
-    volumes:
-      - zookeeper_data:/zookeeper/data
-      - zookeeper_logs:/zookeeper/logs
   kafka:
-    image: custom-kafka:3.3.1
+    image: confluentinc/cp-kafka:7.3.0
     container_name: jenkins-kafka-kafka-1
     depends_on:
       - zookeeper
@@ -25,9 +22,6 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
     ports:
       - "9092:9092"
-    volumes:
-      - kafka_data:/kafka/data
-      - kafka_logs:/kafka/logs
   order-service:
     image: jenkins-kafka-order-service-1
     container_name: jenkins-kafka-order-service-1
@@ -64,8 +58,3 @@ services:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
       - "8083:8083"
-volumes:
-  zookeeper_data:
-  zookeeper_logs:
-  kafka_data:
-  kafka_logs:

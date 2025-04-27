@@ -49,3 +49,19 @@ docker exec -it jenkins-kafka-kafka-1 ls -l /usr/bin/
 | Missing docker-credential-desktop | Reinstall Docker Desktop                                          |
 |                                   | Remove \`"credsStore": "desktop"\` from \`~/.docker/config.json\` |
 
+
+## Kafka CLI
+### Build the Kafka image:
+```bash
+docker build -t custom-kafka:3.3.1 .
+```
+
+## Build Custom Zookeeper Image
+
+```bash
+mkdir -p ~/dev/jenkins-kafka/zookeeper
+cd ~/dev/jenkins-kafka/zookeeper
+cat <<EOF > Dockerfile
+docker build -t custom-zookeeper:3.8.0 .
+
+```
