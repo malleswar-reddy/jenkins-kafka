@@ -1,4 +1,4 @@
-package com.ecommerce.notificationservice.dto;
+package com.ecommerce.commonservice;
 
 public class Order {
     private String orderId;

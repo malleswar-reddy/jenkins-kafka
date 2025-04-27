@@ -15,6 +15,11 @@
     <name>Stock Service</name>
 
     <dependencies>
+        <dependency>
+            <groupId>com.ecommerce</groupId>
+            <artifactId>common-service</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
         <!-- Add module-specific dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

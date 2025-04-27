@@ -18,6 +18,12 @@
         <!-- You can inherit parent dependencies and add module-specific ones here -->
 
         <dependency>
+            <groupId>com.ecommerce</groupId>
+            <artifactId>common-service</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>

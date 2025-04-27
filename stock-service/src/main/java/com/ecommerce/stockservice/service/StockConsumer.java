@@ -1,7 +1,7 @@
 package com.ecommerce.stockservice.service;
 
 
-import com.ecommerce.stockservice.dto.Order;
+import com.ecommerce.commonservice.Order;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
