@@ -263,13 +263,13 @@ docker ps
 
 ### 6. Create Kafka Topics
 ```bash
-docker exec -it jenkins-kafka-kafka-1 kafka-topics.sh --bootstrap-server kafka:9092 --create --topic order_topics --partitions 1 --replication-factor 1
-docker exec -it jenkins-kafka-kafka-1 kafka-topics.sh --bootstrap-server kafka:9092 --create --topic order_topics-dlt --partitions 1 --replication-factor 1
+docker exec -it jenkins-kafka-kafka-1 kafka-topics --bootstrap-server kafka:9092 --create --topic order_topics --partitions 1 --replication-factor 1
+docker exec -it jenkins-kafka-kafka-1 kafka-topics --bootstrap-server kafka:9092 --create --topic order_topics-dlt --partitions 1 --replication-factor 1
 ```
 
 Verify:
 ```bash
-docker exec -it jenkins-kafka-kafka-1 kafka-topics.sh --bootstrap-server kafka:9092 --list
+docker exec -it jenkins-kafka-kafka-1 kafka-topics --bootstrap-server kafka:9092 --list
 ```
 
 ## Key Configurations
@@ -342,8 +342,8 @@ public DefaultErrorHandler errorHandler() {
 
 3. **Inspect Topics**:
    ```bash
-   docker exec -it jenkins-kafka-kafka-1 kafka-console-consumer.sh --bootstrap-server kafka:9092 --topic order_topics --from-beginning
-   docker exec -it jenkins-kafka-kafka-1 kafka-console-consumer.sh --bootstrap-server kafka:9092 --topic order_topics-dlt --from-beginning
+   docker exec -it jenkins-kafka-kafka-1 kafka-console-consumer --bootstrap-server kafka:9092 --topic order_topics --from-beginning
+   docker exec -it jenkins-kafka-kafka-1 kafka-console-consumer --bootstrap-server kafka:9092 --topic order_topics-dlt --from-beginning
    ```
 
 4. **Check Consumer Groups**:

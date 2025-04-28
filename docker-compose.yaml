@@ -8,6 +8,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
     ports:
       - "2181:2181"
+
   kafka:
     image: confluentinc/cp-kafka:7.3.0
     container_name: jenkins-kafka-kafka-1
@@ -22,6 +23,7 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
     ports:
       - "9092:9092"
+
   order-service:
     image: jenkins-kafka-order-service-1
     container_name: jenkins-kafka-order-service-1
@@ -34,6 +36,7 @@ services:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
       - "8081:8081"
+
   stock-service:
     image: jenkins-kafka-stock-service-1
     container_name: jenkins-kafka-stock-service-1
@@ -46,6 +49,7 @@ services:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
       - "8082:8082"
+
   notification-service:
     image: jenkins-kafka-notification-service-1
     container_name: jenkins-kafka-notification-service-1
@@ -58,3 +62,17 @@ services:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
       - "8083:8083"
+
+  ## ✅ Portainer Service (monitor everything)
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: always
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+
+volumes:
+  portainer_data:

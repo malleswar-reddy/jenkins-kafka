@@ -73,3 +73,27 @@ docker build -t custom-zookeeper:3.8.0 .
 
 ```
 
+
+# 🌍 Access Portainer:
+# Open your browser and go to:
+👉 http://localhost:9000
+
+First time, create a username and password.
+
+Then you will see your containers, logs, CPU/Memory usage, etc.
+
+You can start/stop/restart containers easily from UI!
+
+```terminaloutput
+## ✅ Portainer Service (monitor everything)
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: always
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+```
+
