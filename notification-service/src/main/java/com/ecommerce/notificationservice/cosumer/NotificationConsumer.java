@@ -1,7 +1,7 @@
 package com.ecommerce.notificationservice.cosumer;
 
 
-import com.ecommerce.notificationservice.dto.Order;
+import com.ecommerce.commonservice.Order;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;

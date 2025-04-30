@@ -79,7 +79,7 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
       interval: 10s
       retries: 5
-      start_period: 120s
+      start_period: 30s
     restart: unless-stopped
 
   stock-service:
@@ -103,7 +103,7 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
       interval: 10s
       retries: 5
-      start_period: 120s
+      start_period: 30s
     restart: unless-stopped
 
   notification-service:
@@ -128,8 +128,8 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:8083/actuator/health"]
       interval: 10s
       retries: 5
-      start_period: 60s
-    command: ["sh", "-c", "sleep 15 && java -jar /app.jar"]
+      start_period: 30s
+    command: ["sh", "-c", "sleep 60 && java -jar /app.jar"]
     restart: unless-stopped
 
   kafka-ui:
@@ -151,7 +151,7 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
       interval: 10s
       retries: 5
-      start_period: 60s
+      start_period: 30s
     restart: unless-stopped
 
   portainer:
@@ -169,14 +169,14 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:9000/api/status"]
       interval: 10s
       retries: 5
-      start_period: 60s
+      start_period: 30s
     restart: unless-stopped
 
 volumes:
   portainer_data:
   zookeeper_data:
-  kafka_data:
   zookeeper_log:
+  kafka_data:
 
 networks:
   kafka-net:

@@ -1,6 +1,6 @@
 package com.ecommerce.notificationservice.config;
 
-import com.ecommerce.notificationservice.dto.Order;
+import com.ecommerce.commonservice.Order;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.TopicPartition;

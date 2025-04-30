@@ -1,7 +1,7 @@
 package com.ecommerce.notificationservice;
 
 
-import com.ecommerce.notificationservice.dto.Order;
+import com.ecommerce.commonservice.Order;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.TopicPartition;
 import org.springframework.boot.SpringApplication;
