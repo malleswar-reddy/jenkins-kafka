@@ -254,6 +254,8 @@ cd ..
 ### 5. Start Services
 ```bash
 docker-compose up -d
+
+docker compose up -d
 ```
 
 Verify:
@@ -265,6 +267,7 @@ docker ps
 ```bash
 docker exec -it jenkins-kafka-kafka-1 kafka-topics --bootstrap-server kafka:9092 --create --topic order_topics --partitions 1 --replication-factor 1
 docker exec -it jenkins-kafka-kafka-1 kafka-topics --bootstrap-server kafka:9092 --create --topic order_topics-dlt --partitions 1 --replication-factor 1
+
 ```
 
 Verify:
@@ -365,7 +368,10 @@ public DefaultErrorHandler errorHandler() {
   - Fix: Update `docker-compose.yml`, then:
     ```bash
     docker-compose down
-    docker-compose up -d
+    docker-compose up -d --build
+    
+    docker compose down
+    docker compose up -d --build
     ```
 
 - **NodeExistsException**:

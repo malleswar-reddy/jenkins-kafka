@@ -10,6 +10,8 @@ services:
       - "2181:2181"
     volumes:
       - zookeeper_data:/data
+    networks:
+      - kafka-net
     healthcheck:
       test: ["CMD", "bash", "-c", "echo 'ruok' | nc localhost 2181 | grep imok"]
       interval: 10s
@@ -28,30 +30,12 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      # Optional SSL/SASL (uncomment to enable)
-      # KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,SSL:SASL_SSL
-      # KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,SSL://kafka:9093
-      # KAFKA_SECURITY_PROTOCOL: SASL_SSL
-      # KAFKA_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.keystore.jks
-      # KAFKA_SSL_KEYSTORE_PASSWORD: password
-      # KAFKA_SSL_KEY_PASSWORD: password
-      # KAFKA_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.truststore.jks
-      # KAFKA_SSL_TRUSTSTORE_PASSWORD: password
-      # KAFKA_SASL_ENABLED_MECHANISMS: PLAIN
-      # KAFKA_SASL_PROTOCOL: SASL_SSL
-      # KAFKA_SASL_JAAS_CONFIG: |
-      #   org.apache.kafka.common.security.plain.PlainLoginModule required \
-      #   username="admin" \
-      #   password="admin-secret" \
-      #   user_admin="admin-secret" \
-      #   user_producer="producer-secret" \
-      #   user_consumer="consumer-secret";
     ports:
       - "9092:9092"
-      # - "9093:9093"  # Uncomment for SSL/SASL
     volumes:
       - kafka_data:/tmp/kafka-logs
-      # - ./certs:/etc/kafka/secrets  # Uncomment for SSL/SASL
+    networks:
+      - kafka-net
     healthcheck:
       test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
       interval: 10s
@@ -64,16 +48,16 @@ services:
       context: ./order-service
       dockerfile: Dockerfile
     depends_on:
+      zookeeper:
+        condition: service_healthy
       kafka:
         condition: service_healthy
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      # Optional SSL/SASL (add to application.properties)
-      # SPRING_KAFKA_PROPERTIES_SECURITY_PROTOCOL: SASL_SSL
-      # SPRING_KAFKA_PROPERTIES_SASL_MECHANISM: PLAIN
-      # SPRING_KAFKA_PROPERTIES_SASL_JAAS_CONFIG: org.apache.kafka.common.security.plain.PlainLoginModule required username="producer" password="producer-secret";
     ports:
       - "8081:8081"
+    networks:
+      - kafka-net
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
       interval: 10s
@@ -86,12 +70,16 @@ services:
       context: ./stock-service
       dockerfile: Dockerfile
     depends_on:
+      zookeeper:
+        condition: service_healthy
       kafka:
         condition: service_healthy
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
       - "8082:8082"
+    networks:
+      - kafka-net
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
       interval: 10s
@@ -104,12 +92,16 @@ services:
       context: ./notification-service
       dockerfile: Dockerfile
     depends_on:
+      zookeeper:
+        condition: service_healthy
       kafka:
         condition: service_healthy
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
       - "8083:8083"
+    networks:
+      - kafka-net
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8083/actuator/health"]
       interval: 10s
@@ -119,19 +111,17 @@ services:
     image: provectuslabs/kafka-ui:latest
     container_name: kafka-ui
     ports:
-      - "9090:8080"
+      - "9090:8080"  # Host:Container
     environment:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
-      # Optional SSL/SASL (uncomment to enable)
-      # KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL: SASL_SSL
-      # KAFKA_CLUSTERS_0_PROPERTIES_SASL_MECHANISM: PLAIN
-      # KAFKA_CLUSTERS_0_PROPERTIES_SASL_JAAS_CONFIG: org.apache.kafka.common.security.plain.PlainLoginModule required username="admin" password="admin-secret";
-      # KAFKA_CLUSTERS_0_PROPERTIES_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.truststore.jks
-      # KAFKA_CLUSTERS_0_PROPERTIES_SSL_TRUSTSTORE_PASSWORD: password
     depends_on:
+      zookeeper:
+        condition: service_healthy
       kafka:
         condition: service_healthy
+    networks:
+      - kafka-net
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
       interval: 10s
@@ -146,6 +136,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
+    networks:
+      - kafka-net
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/api/status"]
       interval: 10s
