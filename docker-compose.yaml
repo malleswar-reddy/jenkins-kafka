@@ -2,24 +2,31 @@ version: '3.8'
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:7.3.0
-    container_name: jenkins-kafka-zookeeper-1
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-    ports:
-      - "2181:2181"
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOO_AUTOPURGE_PURGE_INTERVAL: "1"
+      ZOO_AUTOPURGE_SNAP_RETAIN_COUNT: "3"
     volumes:
-      - zookeeper_data:/data
+      - zookeeper_data:/var/lib/zookeeper/data
+      - zookeeper_log:/var/lib/zookeeper/log
+      - ./zoo.cfg:/etc/kafka/zookeeper.properties
     networks:
       - kafka-net
     healthcheck:
-      test: ["CMD", "bash", "-c", "echo 'ruok' | nc localhost 2181 | grep imok"]
+      test: ["CMD", "bash", "-c", "echo 'srvr' | nc localhost 2181"]
       interval: 10s
       retries: 5
+    restart: unless-stopped
 
   kafka:
     image: confluentinc/cp-kafka:7.3.0
-    container_name: jenkins-kafka-kafka-1
+    container_name: kafka
     depends_on:
       zookeeper:
         condition: service_healthy
@@ -40,6 +47,7 @@ services:
       test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
       interval: 10s
       retries: 5
+    restart: unless-stopped
 
   order-service:
     image: jenkins-kafka-order-service-1
@@ -62,6 +70,7 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
       interval: 10s
       retries: 5
+    restart: unless-stopped
 
   stock-service:
     image: jenkins-kafka-stock-service-1
@@ -84,6 +93,7 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
       interval: 10s
       retries: 5
+    restart: unless-stopped
 
   notification-service:
     image: jenkins-kafka-notification-service-1
@@ -106,12 +116,13 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:8083/actuator/health"]
       interval: 10s
       retries: 5
+    restart: unless-stopped
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
     container_name: kafka-ui
     ports:
-      - "9090:8080"  # Host:Container
+      - "9090:8080"
     environment:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
@@ -126,11 +137,12 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
       interval: 10s
       retries: 5
+    restart: unless-stopped
 
   portainer:
     image: portainer/portainer-ce:latest
     container_name: portainer
-    restart: always
+#    restart: always
     ports:
       - "9000:9000"
     volumes:
@@ -142,11 +154,13 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:9000/api/status"]
       interval: 10s
       retries: 5
+    restart: unless-stopped
 
 volumes:
   portainer_data:
   zookeeper_data:
   kafka_data:
+  zookeeper_log:
 
 networks:
   kafka-net:
