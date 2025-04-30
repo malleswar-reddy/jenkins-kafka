@@ -1,27 +1,29 @@
-version: '3.8'
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:7.3.0
+    image: zookeeper:3.6.3
     container_name: zookeeper
     ports:
       - "2181:2181"
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-      ZOOKEEPER_INIT_LIMIT: 5
-      ZOOKEEPER_SYNC_LIMIT: 2
-      ZOO_AUTOPURGE_PURGE_INTERVAL: "1"
-      ZOO_AUTOPURGE_SNAP_RETAIN_COUNT: "3"
+      ZOO_HEAP_SIZE: 1024
     volumes:
-      - zookeeper_data:/var/lib/zookeeper/data
-      - zookeeper_log:/var/lib/zookeeper/log
-      - ./zoo.cfg:/etc/kafka/zookeeper.properties
+      - zookeeper_data:/data:delegated
+      - zookeeper_log:/datalog:delegated
+      - ./zoo.cfg:/conf/zoo.cfg
     networks:
       - kafka-net
     healthcheck:
-      test: ["CMD", "bash", "-c", "echo 'srvr' | nc localhost 2181"]
+      test: ["CMD", "bash", "-c", "echo 'srvr' | nc localhost 2181 | grep 'Zookeeper version'"]
       interval: 10s
-      retries: 5
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 1g
     restart: unless-stopped
 
   kafka:
@@ -37,16 +39,23 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_CONFLUENT_PREFLIGHT_CHECK_ENABLED: "false"
     ports:
       - "9092:9092"
     volumes:
-      - kafka_data:/tmp/kafka-logs
+      - kafka_data:/var/lib/kafka/data:delegated
     networks:
       - kafka-net
     healthcheck:
-      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      test: ["CMD", "nc", "-z", "kafka", "9092"]
       interval: 10s
-      retries: 5
+      timeout: 10s
+      retries: 15
+      start_period: 120s
+    deploy:
+      resources:
+        limits:
+          memory: 1.5g
     restart: unless-stopped
 
   order-service:
@@ -70,6 +79,7 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
       interval: 10s
       retries: 5
+      start_period: 120s
     restart: unless-stopped
 
   stock-service:
@@ -93,6 +103,7 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
       interval: 10s
       retries: 5
+      start_period: 120s
     restart: unless-stopped
 
   notification-service:
@@ -108,6 +119,7 @@ services:
         condition: service_healthy
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_KAFKA_CONSUMER_GROUP_ID: notification-group
     ports:
       - "8083:8083"
     networks:
@@ -116,6 +128,8 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:8083/actuator/health"]
       interval: 10s
       retries: 5
+      start_period: 60s
+    command: ["sh", "-c", "sleep 15 && java -jar /app.jar"]
     restart: unless-stopped
 
   kafka-ui:
@@ -137,6 +151,7 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
       interval: 10s
       retries: 5
+      start_period: 60s
     restart: unless-stopped
 
   portainer:
@@ -154,6 +169,7 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:9000/api/status"]
       interval: 10s
       retries: 5
+      start_period: 60s
     restart: unless-stopped
 
 volumes:
