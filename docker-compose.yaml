@@ -129,8 +129,6 @@ services:
       # KAFKA_CLUSTERS_0_PROPERTIES_SASL_JAAS_CONFIG: org.apache.kafka.common.security.plain.PlainLoginModule required username="admin" password="admin-secret";
       # KAFKA_CLUSTERS_0_PROPERTIES_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.truststore.jks
       # KAFKA_CLUSTERS_0_PROPERTIES_SSL_TRUSTSTORE_PASSWORD: password
-    volumes:
-    # - ./certs:/etc/kafka/secrets  # Uncomment for SSL/SASL
     depends_on:
       kafka:
         condition: service_healthy
