@@ -1,17 +1,19 @@
+version: '3.8'
+
 services:
   zookeeper:
     image: zookeeper:3.6.3
     container_name: zookeeper
     ports:
-      - "2181:2181"
+      - "2181:2181" # Exposes Zookeeper on port 2181
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
       ZOO_HEAP_SIZE: 1024
     volumes:
-      - zookeeper_data:/data:delegated
+      - zookeeper_data:/data:delegated # Persistent data storage
       - zookeeper_log:/datalog:delegated
-      - ./zoo.cfg:/conf/zoo.cfg
+      - ./zoo.cfg:/conf/zoo.cfg # Custom Zookeeper configuration
     networks:
       - kafka-net
     healthcheck:
@@ -41,9 +43,9 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_CONFLUENT_PREFLIGHT_CHECK_ENABLED: "false"
     ports:
-      - "9092:9092"
+      - "9092:9092" # Exposes Kafka on port 9092
     volumes:
-      - kafka_data:/var/lib/kafka/data:delegated
+      - kafka_data:/var/lib/kafka/data:delegated # Persistent data storage
     networks:
       - kafka-net
     healthcheck:
@@ -72,7 +74,7 @@ services:
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
-      - "8081:8081"
+      - "8081:8081" # Exposes Order Service on port 8081
     networks:
       - kafka-net
     healthcheck:
@@ -96,7 +98,7 @@ services:
     environment:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
-      - "8082:8082"
+      - "8082:8082" # Exposes Stock Service on port 8082
     networks:
       - kafka-net
     healthcheck:
@@ -121,7 +123,7 @@ services:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       SPRING_KAFKA_CONSUMER_GROUP_ID: notification-group
     ports:
-      - "8083:8083"
+      - "8083:8083" # Exposes Notification Service on port 8083
     networks:
       - kafka-net
     healthcheck:
@@ -129,14 +131,14 @@ services:
       interval: 10s
       retries: 5
       start_period: 30s
-    command: [ "sh", "-c", "sleep 60 && java -jar /app.jar" ]
+    command: [ "sh", "-c", "sleep 60 && java -jar /app.jar" ] # Delays startup to ensure Kafka readiness
     restart: unless-stopped
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
     container_name: kafka-ui
     ports:
-      - "9090:8080"
+      - "9090:8080" # Exposes Kafka UI on port 9090
     environment:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
@@ -157,9 +159,8 @@ services:
   portainer:
     image: portainer/portainer-ce:latest
     container_name: portainer
-#    restart: always
     ports:
-      - "9000:9000"
+      - "9000:9000" # Exposes Portainer on port 9000
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
