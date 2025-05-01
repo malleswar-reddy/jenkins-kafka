@@ -5,7 +5,9 @@ public class Order {
     private String productId;
     private int quantity;
 
-    // Getters and Setters
+    public Order() {
+    }
+
     public String getOrderId() {
         return orderId;
     }
@@ -30,12 +32,9 @@ public class Order {
         this.quantity = quantity;
     }
 
-    @Override
-    public String toString() {
-        return "Order{" +
-                "orderId='" + orderId + '\'' +
-                ", productId='" + productId + '\'' +
-                ", quantity=" + quantity +
-                '}';
+    public Order(String orderId, String productId, int quantity) {
+        this.orderId = orderId;
+        this.productId = productId;
+        this.quantity = quantity;
     }
 }
