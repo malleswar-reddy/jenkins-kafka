@@ -1,4 +1,4 @@
-version: '3.8'
+#version: '3.8'
 
 services:
   zookeeper:
@@ -123,16 +123,18 @@ services:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       SPRING_KAFKA_CONSUMER_GROUP_ID: notification-group
     ports:
-      - "8083:8083" # Exposes Notification Service on port 8083
+      - "8083:8083"
     networks:
       - kafka-net
+    volumes:
+      - ./notification-service/logs:/logs
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8083/actuator/health" ]
       interval: 10s
       retries: 5
       start_period: 30s
-    command: [ "sh", "-c", "sleep 60 && java -jar /app.jar" ] # Delays startup to ensure Kafka readiness
     restart: unless-stopped
+
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest

@@ -100,3 +100,17 @@ Consume messages from order_topics-dlt to verify any failed messages:
 ```copy
 docker exec -it kafka kafka-console-consumer --bootstrap-server kafka:9092 --topic order_topics-dlt --from-beginning
 ```
+
+## First I try:
+```bash
+docker system prune -a
+
+
+docker system prune --volumes
+
+
+cd /var/lib
+sudo rm -rf docker
+systemctl restart docker## First I try:
+```bash
+docker system prune -adocker system prune --volumes
