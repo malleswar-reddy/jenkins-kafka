@@ -264,15 +264,15 @@ docker ps
 ```
 
 ### 6. Create Kafka Topics
-```bash
+```copy
 docker exec -it jenkins-kafka-kafka-1 kafka-topics --bootstrap-server kafka:9092 --create --topic order_topics --partitions 1 --replication-factor 1
 docker exec -it jenkins-kafka-kafka-1 kafka-topics --bootstrap-server kafka:9092 --create --topic order_topics-dlt --partitions 1 --replication-factor 1
 
 ```
 
 Verify:
-```bash
-docker exec -it jenkins-kafka-kafka-1 kafka-topics --bootstrap-server kafka:9092 --list
+```copy
+  docker exec -it jenkins-kafka-kafka-1 kafka-topics --bootstrap-server kafka:9092 --list
 ```
 
 ## Key Configurations
@@ -304,7 +304,7 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.trusted.packages: com.example
+        spring.json.trusted.packages: 'com.ecommerce.commonservice.*'
 ```
 
 ### DeadLetterPublishingRecoverer
@@ -470,7 +470,7 @@ public DefaultErrorHandler errorHandler() {
       consumer:
         value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
         properties:
-          spring.json.trusted.packages: com.example
+          spring.json.trusted.packages: 'com.ecommerce.commonservice.*'
   ```
 - Validate `productId` in `StockService` and `NotificationService` to handle invalid values (e.g., `HHHHHSee`).
 - Rebuild:
@@ -540,4 +540,12 @@ public DefaultErrorHandler errorHandler() {
 - Apache Kafka: https://kafka.apache.org/
 - Confluent Platform: https://docs.confluent.io/
 - Spring Kafka: https://spring.io/projects/spring-kafka
+
+
+## how check order_topics created or not?
+
+```copy
+
+ kafka-topics.sh --bootstrap-server localhost:9092 --list | grep order_topics
+   
 ```

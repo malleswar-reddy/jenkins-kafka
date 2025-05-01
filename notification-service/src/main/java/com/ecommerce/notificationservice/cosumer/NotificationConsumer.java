@@ -17,6 +17,7 @@ public class NotificationConsumer {
             throw new IllegalArgumentException("Invalid productId");
         }
         log.info("Sending notification for order: {}", order.getOrderId());
+        log.info("message received {} ", order);
         // Notification logic
     }
 

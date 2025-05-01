@@ -20,12 +20,12 @@ public class NotificationServiceApplication {
         SpringApplication.run(NotificationServiceApplication.class, args);
     }
 
-    @Bean(name = "kafkaErrorHandler")
+   /* @Bean(name = "kafkaErrorHandler")
     public DefaultErrorHandler errorHandler(KafkaTemplate<String, Order> kafkaTemplate) {
         DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer(kafkaTemplate,
                 (record, ex) -> new TopicPartition("order_topics-dlt", record.partition()));
         DefaultErrorHandler errorHandler = new DefaultErrorHandler(recoverer, new FixedBackOff(1000L, 2L)); // 2 retries, 1s backoff
         errorHandler.setLogLevel(KafkaException.Level.ERROR);
         return errorHandler;
-    }
+    }*/
 }
