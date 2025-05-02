@@ -1,116 +1,148 @@
-# Purging All Unused or Dangling Images, Containers, Volumes, and Networks
+# README: Dockerized Microservices with Kafka
 
-### This command will remove all unused or dangling images, containers, volumes, and networks.
-### It is a good practice to run this command periodically to free up disk space.
-```copy
-docker system prune
-```
+This project sets up a microservices architecture using Docker, Kafka, and related services (OrderService, StockService, NotificationService). This README provides instructions for managing Docker resources, troubleshooting common issues, and testing the services.
 
-### This command will remove all unused or dangling images, containers, volumes, and networks.
-### It is a good practice to run this command periodically to free up disk space.
-```copy
-docker system prune -a
-```
-### This command will remove all unused or dangling images, containers, volumes, and networks.
-### It is a good practice to run this command periodically to free up disk space.
-```copy
-docker system prune -a --volumes
-```
-### This command will remove all unused or dangling images, containers, volumes, and networks.
-### It is a good practice to run this command periodically to free up disk space.
-```copy
-docker system prune -a --volumes --force
-```
-### This command will remove all unused or dangling images, containers, volumes, and networks.
+## Table of Contents
+1. [Prerequisites](#prerequisites)
+2. [Docker Cleanup](#docker-cleanup)
+3. [Troubleshooting Docker CLI](#troubleshooting-docker-cli)
+4. [Rebuilding and Running Notification Service](#rebuilding-and-running-notification-service)
+5. [Testing OrderService](#testing-orderservice)
+6. [Inspecting Kafka Topics](#inspecting-kafka-topics)
+7. [Additional Notes](#additional-notes)
 
-## error:  zsh: command not found: docker
-### This error occurs when the Docker CLI is not installed or not in the system's PATH.
-✅ Here's how to fix it:
-🔧 1. Check if Docker CLI is actually installed
-```copy
-ls /Applications/Docker.app/Contents/Resources/bin/
+## Prerequisites
+- **Docker** and **Docker Compose** installed.
+- **Kafka** running in a Docker container (named `kafka`).
+- **Postman** or a similar tool for API testing.
+- Access to `/private/etc/hosts` for local host configuration.
 
-```
+## Docker Cleanup
+To free up disk space, periodically remove unused Docker resources (images, containers, volumes, networks).
 
-🔧 2. Manually Add Docker to Your PATH
+### Commands
+1. Remove unused resources:
+   ```bash
+   docker system prune
+   ```
+2. Remove all unused resources, including images not used by any container:
+   ```bash
+   docker system prune -a
+   ```
+3. Remove unused volumes as well:
+   ```bash
+   docker system prune -a --volumes
+   ```
+4. Force removal without confirmation:
+   ```bash
+   docker system prune -a --volumes --force
+   ```
 
-Add this to your copy config file (~/.zshrc for Zsh):
-```copy
-export PATH="/Applications/Docker.app/Contents/Resources/bin:$PATH"
-``` 
-
-🔧 3. Restart your terminal or run the following command to apply the changes:
-```copy
-source ~/.zshrc
-```
-🔧 4. Verify that Docker is now in your PATH:
-```copy
-which docker
-```
-
-To do that, run:
-
-echo 'export PATH="/Applications/Docker.app/Contents/Resources/bin:$PATH"' >> ~/.zshrc
-source ~/.zshrc
-
-Then try:
-
-docker --version
-
-## host  docker-desktop
-```copy
-sudo nano  /private/etc/hosts 
-
-::1             localhost
-#192.168.0.149   kafka
-
-```
-
-
-# Next Steps:
-## Test OrderService:
-
-
-Use Postman or a similar tool to send a POST request to http://localhost:8081/orders with a sample order payload:
-```json
-{
-"orderId": "ORD001",
-"productId": "PROD001",
-"quantity": 10
-}
-``` 
-2.Verify Logs:
-
-
-Check the logs of OrderService, StockService, and NotificationService to ensure the order is processed:
-```copy
-docker logs jenkins-kafka-order-service-1
-docker logs jenkins-kafka-stock-service-1
-docker logs jenkins-kafka-notification-service-1
-```
- 3.Inspect Topics:
-
-
-Consume messages from order_topics to verify the order is published:
-```copy
-docker exec -it kafka kafka-console-consumer --bootstrap-server kafka:9092 --topic order_topics --from-beginning
-```
- 4.Check Dead-Letter Topic (if needed):
-Consume messages from order_topics-dlt to verify any failed messages:
-```copy
-docker exec -it kafka kafka-console-consumer --bootstrap-server kafka:9092 --topic order_topics-dlt --from-beginning
-```
-
-## First I try:
+### Advanced Cleanup (if needed)
+To completely reset Docker (use with caution):
 ```bash
-docker system prune -a
-
-
-docker system prune --volumes
-
-
 cd /var/lib
 sudo rm -rf docker
-systemctl restart docker## First I try:
+systemctl restart docker
+```
+
+## Troubleshooting Docker CLI
+If you encounter the error `zsh: command not found: docker`, the Docker CLI is either not installed or not in your system's PATH.
+
+### Steps to Fix
+1. **Check if Docker is installed**:
+   ```bash
+   ls /Applications/Docker.app/Contents/Resources/bin/
+   ```
+   Ensure `docker` is listed.
+
+2. **Add Docker to PATH**:
+   Add the following to your `~/.zshrc`:
+   ```bash
+   export PATH="/Applications/Docker.app/Contents/Resources/bin:$PATH"
+   ```
+   Or run:
+   ```bash
+   echo 'export PATH="/Applications/Docker.app/Contents/Resources/bin:$PATH"' >> ~/.zshrc
+   ```
+
+3. **Apply changes**:
+   ```bash
+   source ~/.zshrc
+   ```
+
+4. **Verify Docker**:
+   ```bash
+   which docker
+   docker --version
+   ```
+
+### Configure Hosts (if needed)
+If services like Kafka require host mapping:
 ```bash
-docker system prune -adocker system prune --volumes
+sudo nano /private/etc/hosts
+```
+Add:
+```
+::1             localhost
+#192.168.0.149   kafka
+```
+
+## Rebuilding and Running Notification Service
+If the Notification Service fails, rebuild and redeploy it.
+
+### Steps
+1. **Fix the Dockerfile** (ensure it’s correct; not provided here).
+2. **Rebuild the image**:
+   ```bash
+   docker build -t notification-service .
+   ```
+3. **Run the container**:
+   ```bash
+   docker run -d --name notification-service -p 8083:8083 notification-service
+   ```
+4. **Check logs**:
+   ```bash
+   docker logs notification-service
+   ```
+
+## Testing OrderService
+Test the OrderService by sending a sample order and verifying the process.
+
+### Steps
+1. **Send a POST request**:
+   Use Postman to send a POST request to `http://localhost:8081/orders`:
+   ```json
+   {
+       "orderId": "ORD001",
+       "productId": "PROD001",
+       "quantity": 10
+   }
+   ```
+
+2. **Verify logs**:
+   Check logs for each service:
+   ```bash
+   docker logs jenkins-kafka-order-service-1
+   docker logs jenkins-kafka-stock-service-1
+   docker logs jenkins-kafka-notification-service-1
+   ```
+
+## Inspecting Kafka Topics
+Verify that messages are published to Kafka topics.
+
+### Steps
+1. **Consume messages from `order_topics`**:
+   ```bash
+   docker exec -it kafka kafka-console-consumer --bootstrap-server kafka:9092 --topic order_topics --from-beginning
+   ```
+
+2. **Check dead-letter topic (`order_topics-dlt`)**:
+   ```bash
+   docker exec -it kafka kafka-console-consumer --bootstrap-server kafka:9092 --topic order_topics-dlt --from-beginning
+   ```
+
+## Additional Notes
+- Ensure Kafka is accessible at `kafka:9092` within the Docker network.
+- If services fail, check Docker Compose configurations and network settings.
+- Regularly clean up Docker resources to avoid disk space issues.
