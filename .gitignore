@@ -25,3 +25,11 @@ replay_pid*
 *.iml
 .idea
 */target
+.gradle
+.gitignore
+*/build
+*/*/build
+/build-logic
+/gradle/wrapper/gradle-wrapper.properties
+/build/*
+/gradle
